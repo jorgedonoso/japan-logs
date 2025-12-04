@@ -10,7 +10,15 @@ datasource db {
   provider = "sqlite"
 }
 
-model Prefectures {
-  id   Int    @id @default(autoincrement())
-  name String
+model Region {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  prefectures Prefecture[]
+}
+
+model Prefecture {
+  id       Int    @id @default(autoincrement())
+  name     String
+  region   Region @relation(fields: [regionId], references: [id])
+  regionId Int
 }

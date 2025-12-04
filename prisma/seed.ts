@@ -8,63 +8,93 @@ const db = new PrismaClient({
   }),
 });
 
-// Geographical order.
-const prefectures = [
-  { name: "Hokkaido" },
-  { name: "Aomori" },
-  { name: "Iwate" },
-  { name: "Miyagi" },
-  { name: "Akita" },
-  { name: "Yamagata" },
-  { name: "Fukushima" },
-  { name: "Ibaraki" },
-  { name: "Tochigi" },
-  { name: "Gunma" },
-  { name: "Saitama" },
-  { name: "Chiba" },
-  { name: "Tokyo" },
-  { name: "Kanagawa" },
-  { name: "Niigata" },
-  { name: "Toyama" },
-  { name: "Ishikawa" },
-  { name: "Fukui" },
-  { name: "Yamanashi" },
-  { name: "Nagano" },
-  { name: "Gifu" },
-  { name: "Shizuoka" },
-  { name: "Aichi" },
-  { name: "Mie" },
-  { name: "Shiga" },
-  { name: "Kyoto" },
-  { name: "Osaka" },
-  { name: "Hyogo" },
-  { name: "Nara" },
-  { name: "Wakayama" },
-  { name: "Tottori" },
-  { name: "Shimane" },
-  { name: "Okayama" },
-  { name: "Hiroshima" },
-  { name: "Yamaguchi" },
-  { name: "Tokushima" },
-  { name: "Kagawa" },
-  { name: "Ehime" },
-  { name: "Kochi" },
-  { name: "Fukuoka" },
-  { name: "Saga" },
-  { name: "Nagasaki" },
-  { name: "Kumamoto" },
-  { name: "Oita" },
-  { name: "Miyazaki" },
-  { name: "Kagoshima" },
-  { name: "Okinawa" },
+const regions = [
+  { name: "Hokkaido", prefectures: ["Hokkaido"] },
+  {
+    name: "Tohoku",
+    prefectures: [
+      "Aomori",
+      "Iwate",
+      "Miyagi",
+      "Akita",
+      "Yamagata",
+      "Fukushima",
+    ],
+  },
+  {
+    name: "Kanto",
+    prefectures: [
+      "Ibaraki",
+      "Tochigi",
+      "Gunma",
+      "Saitama",
+      "Chiba",
+      "Tokyo",
+      "Kanagawa",
+    ],
+  },
+  {
+    name: "Chubu",
+    prefectures: [
+      "Niigata",
+      "Toyama",
+      "Ishikawa",
+      "Fukui",
+      "Yamanashi",
+      "Nagano",
+      "Gifu",
+      "Shizuoka",
+      "Aichi",
+      "Mie",
+    ],
+  },
+  {
+    name: "Kansai",
+    prefectures: ["Shiga", "Kyoto", "Osaka", "Hyogo", "Nara", "Wakayama"],
+  },
+  {
+    name: "Chugoku",
+    prefectures: ["Tottori", "Shimane", "Okayama", "Hiroshima", "Yamaguchi"],
+  },
+  { name: "Shikoku", prefectures: ["Tokushima", "Kagawa", "Ehime", "Kochi"] },
+  {
+    name: "Kyushu",
+    prefectures: [
+      "Fukuoka",
+      "Saga",
+      "Nagasaki",
+      "Kumamoto",
+      "Oita",
+      "Miyazaki",
+      "Kagoshima",
+    ],
+  },
+  {
+    name: "Okinawa",
+    prefectures: ["Okinawa"],
+  },
 ];
 
 async function main() {
-  await db.prefectures.deleteMany();
+  await db.prefecture.deleteMany();
+  await db.region.deleteMany();
 
-  await db.prefectures.createMany({
-    data: prefectures,
-  });
+  for (const region of regions) {
+    const createdRegion = await db.region.create({
+      data: {
+        name: region.name,
+      },
+    });
+
+    for (const prefName of region.prefectures) {
+      await db.prefecture.create({
+        data: {
+          name: prefName,
+          regionId: createdRegion.id,
+        },
+      });
+    }
+  }
 
   console.log("Database seed completed.");
 }

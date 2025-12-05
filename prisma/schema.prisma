@@ -17,8 +17,16 @@ model Region {
 }
 
 model Prefecture {
-  id       Int    @id @default(autoincrement())
-  name     String
-  region   Region @relation(fields: [regionId], references: [id])
-  regionId Int
+  id        Int        @id @default(autoincrement())
+  name      String
+  region    Region     @relation(fields: [regionId], references: [id])
+  regionId  Int
+  locations Location[]
+}
+
+model Location {
+  id           String     @id @default(uuid())
+  name         String
+  prefecture   Prefecture @relation(fields: [prefectureId], references: [id])
+  prefectureId Int
 }

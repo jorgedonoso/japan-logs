@@ -75,7 +75,14 @@ const regions = [
   },
 ];
 
+const locations = [
+  { name: "Tokyo Skytree", prefecture: "Tokyo" },
+  { name: "Mt. Inasa", prefecture: "Nagasaki" },
+  { name: "Sapporo Tower", prefecture: "Hokkaido" },
+];
+
 async function main() {
+  await db.location.deleteMany();
   await db.prefecture.deleteMany();
   await db.region.deleteMany();
 
@@ -94,6 +101,19 @@ async function main() {
         },
       });
     }
+  }
+
+  for (const location of locations) {
+    const asdf = await db.prefecture.findFirst({
+      where: { name: location.prefecture },
+    });
+
+    await db.location.create({
+      data: {
+        name: location.name,
+        prefectureId: asdf?.id ?? 0,
+      },
+    });
   }
 
   console.log("Database seed completed.");

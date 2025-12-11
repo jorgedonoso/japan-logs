@@ -27,7 +27,15 @@ export default async function LocationPage({
   return (
     <div>
       <h1>{location.id}</h1>
-      <p>{location.name}</p>
+      <p>
+        <b>Title:</b> {location.name}
+      </p>
+      <p>
+        <b>Prefecture:</b> {location.prefecture.name}
+      </p>
+      <p>
+        <b>Region:</b> {location.prefecture.region.name}
+      </p>
     </div>
   );
 }
@@ -35,5 +43,6 @@ export default async function LocationPage({
 async function getLocation(id: string) {
   return db.location.findUnique({
     where: { id },
+    include: { prefecture: { include: { region: true } } },
   });
 }

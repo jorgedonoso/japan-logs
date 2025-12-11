@@ -1,5 +1,6 @@
 import { PrismaClient } from "../generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import Link from "next/link";
 import { env } from "prisma/config";
 
 const db = new PrismaClient({
@@ -9,28 +10,15 @@ const db = new PrismaClient({
 });
 
 export default async function Home() {
-  const prefectures = await db.prefecture.findMany({
-    include: { region: true },
-  });
+  const locations = await db.location.findMany();
 
   return (
     <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Region</th>
-            <th>Prefecture</th>
-          </tr>
-        </thead>
-        <tbody>
-          {prefectures.map((p) => (
-            <tr key={p.id}>
-              <td>{p.region.name}</td>
-              <td>{p.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {locations.map((l) => (
+        <div key={l.id}>
+          <Link href={`/locations/${l.id}`}>{l.name}</Link>
+        </div>
+      ))}
     </div>
   );
 }
